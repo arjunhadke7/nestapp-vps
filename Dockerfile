@@ -10,11 +10,11 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Install NestJS CLI globally (Important)
-RUN npm install -g @nestjs/cli
-
 # Copy the rest of the application code
 COPY . .
+
+# Generate Prisma client (fixes Prisma errors)
+RUN npx prisma generate
 
 # Build the NestJS app
 RUN npm run build
