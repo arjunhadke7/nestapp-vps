@@ -1,9 +1,21 @@
 version: '3'
 services:
+  nestjs:
+    build: .
+    container_name: nestjs_app
+    ports:
+      - "3006:3000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
   umami:
     image: ghcr.io/umami-software/umami:postgresql-latest
     ports:
-      - '8082:3000'
+      - '8085:3000'
     environment:
       DATABASE_URL: postgresql://umami:umami@db:5432/umami
       DATABASE_TYPE: postgresql
@@ -21,8 +33,6 @@ services:
       POSTGRES_PASSWORD: umami
     volumes:
       - umami-db-data:/var/lib/postgresql/data
-    ports:
-      - '5432:5432' # Expose PostgreSQL port to the host
     restart: always
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
@@ -33,7 +43,7 @@ services:
   adminer:
     image: adminer
     ports:
-      - '8080:8080'
+      - '3007:8080'
     depends_on:
       db:
         condition: service_healthy
